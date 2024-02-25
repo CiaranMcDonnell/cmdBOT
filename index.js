@@ -1,25 +1,28 @@
-import dotenv from 'dotenv';
+const dotenv = require('dotenv');
 dotenv.config();
 
-import { Client, GatewayIntentBits, messageLink } from 'discord.js';
+const { Client, Intents, IntentsBitField } = require('discord.js');
+const internal = require('stream');
 
-const client = new Client({
+const client = new Client({ 
     intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.DirectMessages
-    ],
+        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.GuildMembers,
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.MessageContent
+    ] 
 });
 
 client.login(process.env.DISCORD_TOKEN);
 
-client.on("messageCreate", async (message) => {
-    console.log(message);
+client.on('ready', () => {
+    console.log(`Bot is ready as: ${client.user.tag}`);
+});
 
-    if (!message?.author.bot) {
-        if (message.content === "ping") {
-            message.reply("pong");
-        }
+client.on('interactionCreate', (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    if(interaction.commandName === 'ping') {
+        interaction.reply('Pong!');
     }
 });
